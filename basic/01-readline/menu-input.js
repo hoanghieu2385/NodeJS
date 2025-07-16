@@ -14,11 +14,11 @@ function get_gold_price() {
 		.then((data) => {
 			const goldItems = data.DataList.Data;
 			goldItems.forEach((items, index) => {
-				const name = items[`@n_${index + 1}`];
-				const k = items[`@k_${index + 1}`];
-				const content = items[`@h_${index + 1}`];
-				const buy = items[`@pb_${index + 1}`];
-				const sell = items[`@ps_${index + 1}`];
+				const name     = items[`@n_${index + 1}`];
+				const k        = items[`@k_${index + 1}`];
+				const content  = items[`@h_${index + 1}`];
+				const buy      = items[`@pb_${index + 1}`];
+				const sell     = items[`@ps_${index + 1}`];
 				const time_get = items[`@d_${index + 1}`];
 
 				console.log(`\nType of gold: ${name}`);
@@ -55,7 +55,7 @@ function get_usd_price() {
 }
 
 function Menu() {
-	console.log('\n\n== MENU ==');
+	console.log('\n== MENU ==');
 	console.log('1. Gold price');
 	console.log('2. USD price');
 	console.log('3. Exit');
