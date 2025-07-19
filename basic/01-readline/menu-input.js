@@ -1,4 +1,3 @@
-import { error, time } from 'console';
 import readline from 'readline';
 
 const rl = readline.createInterface({
@@ -6,7 +5,7 @@ const rl = readline.createInterface({
 	output: process.stdout,
 });
 
-function get_gold_price() {
+function getGoldPrice() {
 	const url = 'http://api.btmc.vn/api/BTMCAPI/getpricebtmc?key=3kd8ub1llcg9t45hnoh8hmn7t5kc2v';
 
 	fetch(url)
@@ -14,17 +13,18 @@ function get_gold_price() {
 		.then((data) => {
 			const goldItems = data.DataList.Data;
 			goldItems.forEach((items, index) => {
-				const name     = items[`@n_${index + 1}`];
-				const k        = items[`@k_${index + 1}`];
-				const content  = items[`@h_${index + 1}`];
-				const buy      = items[`@pb_${index + 1}`];
-				const sell     = items[`@ps_${index + 1}`];
-				const time_get = items[`@d_${index + 1}`];
+                const i = index + 1
+				const name     = items[`@n_${i}`];
+				const k        = items[`@k_${i}`];
+				const content  = items[`@h_${i}`];
+				const buy      = items[`@pb_${i}`];
+				const sell     = items[`@ps_${i}`];
+				const time_get = items[`@d_${i}`];
 
 				console.log(`\nType of gold: ${name}`);
 				console.log(`Content : ${Number(content).toLocaleString()} ` + `(${k})`);
 				console.log(`Buy price: ${Number(buy).toLocaleString()} VND`);
-				console.log(`Buy price: ${Number(sell).toLocaleString()} VND`);
+				console.log(`Sell price: ${Number(sell).toLocaleString()} VND`);
 				console.log(`Time: ${time_get}`);
 			});
 			Menu();
@@ -35,13 +35,12 @@ function get_gold_price() {
 		});
 }
 
-function get_usd_price() {
+function getUsdToVND() {
 	const url = 'https://open.er-api.com/v6/latest/USD';
 
 	fetch(url)
 		.then((response) => response.json())
 		.then((data) => {
-			// const usd = data.rates["USD"];
 			const vnd = data.rates['VND'];
 			console.log(`1 USD = ${vnd} VND`);
 
@@ -63,11 +62,11 @@ function Menu() {
 	rl.question('Enter your choice: ', (choice) => {
 		switch (choice) {
 			case '1':
-				get_gold_price();
+				getGoldPrice();
 				return;
 
 			case '2':
-				get_usd_price();
+				getUsdToVND();
 				return;
 
 			case '3':
