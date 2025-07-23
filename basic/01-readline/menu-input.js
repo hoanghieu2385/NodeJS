@@ -1,6 +1,6 @@
 import readline from 'readline';
 
-const rl = readline.createInterface({
+const inputReader = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
@@ -10,8 +10,8 @@ function fetchGoldPricesFromBTMC() {
 
   fetch(apiUrl)
     .then((response) => response.json())
-    .then((data) => {
-      const goldItems = data.DataList.Data;
+    .then((responseData) => {
+      const goldItems = responseData.DataList.Data;
       goldItems.forEach((items, index) => {
         const itemIndex = index + 1;
         const goldTypeName = items[`@n_${itemIndex}`];
@@ -27,11 +27,12 @@ function fetchGoldPricesFromBTMC() {
         console.log(`Sell price: ${Number(sellPrice).toLocaleString()} VND`);
         console.log(`Last updated: ${timestamp}`);
       });
-      Menu();
+
+      displayMenu();
     })
     .catch((error) => {
-      console.log('An error occurred: ', error);
-      Menu();
+      console.log('An error occurred:', error);
+      displayMenu();
     });
 }
 
@@ -40,26 +41,25 @@ function fetchUsdToVndExchangeRate() {
 
   fetch(apiUrl)
     .then((response) => response.json())
-    .then((data) => {
-      const exchangeRateVnd = data.rates['VND'];
-      console.log(`1 USD = ${exchangeRateVnd} VND`);
-
-      Menu();
+    .then((responseData) => {
+      const exchangeRateToVND = responseData.rates['VND'];
+      console.log(`\n1 USD = ${exchangeRateToVND} VND`);
+      displayMenu();
     })
     .catch((error) => {
-      console.log('An error occurred: ', error);
-      Menu();
+      console.log('An error occurred:', error);
+      displayMenu();
     });
 }
 
-function Menu() {
-  console.log('\n== MENU ==');
+function displayMenu() {
+  console.log('\n== MAIN MENU ==');
   console.log('1. View Gold Prices');
   console.log('2. View USD to VND Exchange Rate');
   console.log('3. Exit');
 
-  rl.question('Enter your choice: ', (choice) => {
-    switch (choice) {
+  inputReader.question('Enter your choice: ', (userChoice) => {
+    switch (userChoice) {
       case '1':
         fetchGoldPricesFromBTMC();
         return;
@@ -70,16 +70,14 @@ function Menu() {
 
       case '3':
         console.log('Exiting..');
-        rl.close();
+        inputReader.close();
         return;
 
       default:
         console.log('Please choice a valid input!!');
         break;
     }
-
-    Menu();
   });
 }
 
-Menu();
+displayMenu();
