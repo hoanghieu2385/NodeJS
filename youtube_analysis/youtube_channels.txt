@@ -1,0 +1,56 @@
+1. Tổng hợp 5 kênh youtube cho mỗi chủ đề sau: 
+- Kênh tin tức trong nước
+	ANTV
+        https://www.youtube.com/@antvtruyenhinhcongannhandan
+	Kênh Chuyên đề - Khoa giáo THTPCT
+        https://www.youtube.com/@chuyende-thtpct/featured
+	VTV24
+        https://www.youtube.com/@vtv24/featured
+	Truyền hình Quảng Ngãi
+        https://www.youtube.com/truyenhinhquangngai
+	Báo Sức khỏe & Đời sống
+        https://www.youtube.com/@BaoSuckhoedoisongboyte/featured
+- Kênh vlog làm về du lịch trải nghiệm
+	Du lịch trải nghiệm
+        https://www.youtube.com/@familytravel_dulichtrainghiem/featured
+	Xẻo Travel
+        https://www.youtube.com/@Xeo_Travel/featured
+	Gấu Ham Đi
+        https://www.youtube.com/@gauhamdi/featured
+	Toro Pan
+        https://www.youtube.com/@Toro_Pan/featured
+	Khoai Lang Thang
+        https://www.youtube.com/@KhoaiLangThang
+- Kênh hướng dẫn kỹ thuật quay dựng video
+	Film Riot
+        https://www.youtube.com/@filmriot
+	Cường - - Làm Phim Nghiệp Dư
+        https://www.youtube.com/@cuonglpnd
+	Làm Phim Cùng Nam Trịnh
+        https://www.youtube.com/c/L%C3%A0mPhimC%C3%B9ngNamTr%E1%BB%8Bnh/videos
+	Mean Tính
+        https://www.youtube.com/@tinh/videos
+	Quạ HD
+        https://www.youtube.com/@quahd/videos
+- Kênh về lập trình
+	freeCodeCamp.org
+        https://www.youtube.com/@freecodecamp
+	Dũng Lại Lập Trình
+        https://www.youtube.com/@dunglailaptrinh
+	K team
+        https://www.youtube.com/@KTeam/featured
+	SuperSimpleDev
+        https://www.youtube.com/@SuperSimpleDev/featured
+	Programming with Mosh
+        https://www.youtube.com/@programmingwithmosh/featured
+- Kênh review sản phẩm công nghệ.
+	Vật Vờ Studio
+        https://www.youtube.com/@realvatvostudio/featured
+	Unbox Therapy
+        https://www.youtube.com/@unboxtherapy
+	AnhEm TV
+        https://www.youtube.com/@anhemtv/featured
+	relab
+        https://www.youtube.com/@relab2015/featured
+	The Verge
+        https://www.youtube.com/@TheVerge/videos
