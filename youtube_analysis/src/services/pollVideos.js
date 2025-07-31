@@ -1,6 +1,7 @@
 const { google } = require('googleapis');
 const { Video } = require('../models');
 const { channels } = require('../../config/channels.js');
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 
 const youtube = google.youtube({
   version: 'v3',
@@ -78,3 +79,28 @@ const pollNewVideos = async () => {
 };
 
 module.exports = pollNewVideos;
+
+if (require.main === module) {
+  const { sequelize } = require('../models');
+  const { seedChannels } = require('./seedChannels');
+
+  (async () => {
+    try {
+      await sequelize.sync({ alter: true });
+      await seedChannels?.();
+
+      // Gọi ngay lần đầu
+      await pollNewVideos();
+
+      // Tự động quét lại mỗi 15 phút (15 * 60 * 1000 ms)
+      setInterval(async () => {
+        console.log('\nNext scan triggered at', new Date().toLocaleString());
+        await pollNewVideos();
+      }, 15 * 60 * 1000);
+
+    } catch (err) {
+      console.error('Error during startup:', err);
+      process.exit(1);
+    }
+  })();
+}
