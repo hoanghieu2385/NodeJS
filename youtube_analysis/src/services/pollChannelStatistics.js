@@ -1,6 +1,6 @@
 const { google } = require('googleapis');
 const { Channel, Video, ChannelStats, sequelize } = require('../models');
-const { Op, where } = require('sequelize');
+const { Op } = require('sequelize');
 require('dotenv').config({
   path: require('path').resolve(__dirname, '../../.env'),
 });
@@ -12,12 +12,12 @@ const youtubeApi = google.youtube({
 
 const START_DATE = new Date('2025-07-15');
 
-async function pollChannelStatistics() {
-  const listOfChannels = await Channel.findAll();
+async function pollAndSaveStatistics() {
+  const channels = await Channel.findAll();
 
-  for (const channel of listOfChannels) {
+  for (const channel of channels) {
     try {
-      const videosOfChannel = await Video.findAll({
+      const videos = await Video.findAll({
         where: {
           channelId: channel.channelId,
           publishedAt: {
@@ -26,31 +26,26 @@ async function pollChannelStatistics() {
         },
       });
 
-      if (videosOfChannel.length === 0) {
-        console.log("Don't find any video of channel", channel.name);
+      if (videos.length === 0) {
+        console.log(`No videos found for channel: ${channel.name}`);
+        continue;
       }
 
-      // Get video
-      const videoIds = videosOfChannel
-        .map((video) => video.videoId)
-        .slice(0, 50);
+      const videoIds = videos.map(v => v.videoId).slice(0, 50);
 
-      const statisticsResponse = await youtubeApi.videos.list({
+      const videoStats = await youtubeApi.videos.list({
         part: 'statistics',
         id: videoIds.join(','),
       });
 
-      // calculate total views, likes
       let totalViews = 0;
       let totalLikes = 0;
-
-      for (const videoData of statisticsResponse.data.items) {
-        const statistics = videoData.statistics;
-        totalViews += parseInt(statistics.viewCount || '0');
-        totalLikes += parseInt(statistics.likeCount || '0');
+      for (const video of videoStats.data.items) {
+        const stats = video.statistics;
+        totalViews += parseInt(stats.viewCount || '0', 10);
+        totalLikes += parseInt(stats.likeCount || '0', 10);
       }
 
-      // Get channel statistics to get subs
       const channelResponse = await youtubeApi.channels.list({
         part: 'statistics',
         id: channel.channelId,
@@ -63,56 +58,116 @@ async function pollChannelStatistics() {
 
       const today = new Date().toISOString().slice(0, 10);
 
-      const [channelStatsRecord, wasCreated] = await ChannelStats.findOrCreate({
+      const [record, created] = await ChannelStats.findOrCreate({
         where: {
           channelId: channel.channelId,
           date: today,
         },
         defaults: {
-          totalViews: totalViews,
-          totalLikes: totalLikes,
-          subscriberCount: subscriberCount,
+          totalViews,
+          totalLikes,
+          subscriberCount,
         },
       });
 
-      if (wasCreated) {
-        console.log(`\nSaved data for channel ${channel.name} on ${today}`);
+      if (created) {
+        console.log(`Data saved for channel ${channel.name} (${today})`);
       } else {
-        console.log(
-          `\nToday's metrics already exist for channel ${channel.name}`,
-        );
+        console.log(`Data for channel ${channel.name} already exists for today.`);
       }
-
-      console.log(
-        `[LIVE statistics] ${channel.name} | Views: ${totalViews} | Likes: ${totalLikes} | Subs: ${subscriberCount}`,
-      );
     } catch (error) {
-      console.log('\nAn error when scanning channel', error.message);
+      console.error(`Error scanning channel ${channel.name}: ${error.message}`);
     }
   }
 }
 
-module.exports = pollChannelStatistics;
+async function showLiveStatistics() {
+  const channels = await Channel.findAll();
+
+  for (const channel of channels) {
+    try {
+      const videos = await Video.findAll({
+        where: {
+          channelId: channel.channelId,
+          publishedAt: {
+            [Op.gte]: START_DATE,
+          },
+        },
+      });
+
+      let totalViews = 0;
+      let totalLikes = 0;
+
+      if (videos.length > 0) {
+        const videoIds = videos.map(v => v.videoId).slice(0, 50);
+        const videoStats = await youtubeApi.videos.list({
+          part: 'statistics',
+          id: videoIds.join(','),
+        });
+
+        for (const video of videoStats.data.items) {
+          const stats = video.statistics;
+          totalViews += parseInt(stats.viewCount || '0', 10);
+          totalLikes += parseInt(stats.likeCount || '0', 10);
+        }
+      }
+
+      const channelResponse = await youtubeApi.channels.list({
+        part: 'statistics',
+        id: channel.channelId,
+      });
+
+      const subscriberCount = parseInt(
+        channelResponse.data.items?.[0]?.statistics?.subscriberCount || '0',
+        10,
+      );
+
+      console.log(`[LIVE] ${channel.name} | Views: ${totalViews} | Likes: ${totalLikes} | Subs: ${subscriberCount}`);
+    } catch (error) {
+      console.error(`Error fetching live stats for channel ${channel.name}: ${error.message}`);
+    }
+  }
+  console.log('');
+}
 
 if (require.main === module) {
   (async () => {
     try {
+      console.log('Connecting to database...');
       await sequelize.sync();
+      console.log('Database connected.');
 
-      let currentDay = new Date().toISOString().slice(0, 10);
-      await pollChannelStatistics();
+      // Run immediately
+      await pollAndSaveStatistics();
+      await showLiveStatistics();
 
-      setInterval(async () => {
-        let newDay = new Date().toISOString().slice(0, 10);
+      // Schedule live stats every 5 minutes
+      setInterval(showLiveStatistics, 5 * 60 * 1000);
+      console.log('Live statistics will update every 5 minutes.');
 
-        if (newDay != currentDay) {
-          await pollChannelStatistics();
+      // Schedule daily save at 23:00
+      function scheduleDailySave() {
+        const now = new Date();
+        const nextRun = new Date();
 
-          currentDay = newDay;
+        nextRun.setHours(23, 0, 0, 0);
+        if (now > nextRun) {
+          nextRun.setDate(nextRun.getDate() + 1);
         }
-      }, 60 * 1000);
+
+        const delay = nextRun - now;
+        // console.log(`Next daily save scheduled at: ${nextRun.toLocaleString()}`);
+
+        setTimeout(async () => {
+          await pollAndSaveStatistics();
+          scheduleDailySave();
+        }, delay);
+      }
+
+      scheduleDailySave();
     } catch (error) {
-      console.log('An error when running: ', error);
+      console.error('Error starting scheduler:', error.message);
+      process.exit(1);
     }
   })();
 }
