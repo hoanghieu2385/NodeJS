@@ -82,7 +82,7 @@ module.exports = pollNewVideos;
 
 if (require.main === module) {
   const { sequelize } = require('../models');
-  const { seedChannels } = require('./seedChannels');
+  const { seedData } = require('./seedData');
 
   (async () => {
     try {

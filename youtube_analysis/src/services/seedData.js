@@ -2,7 +2,7 @@ const sequelize = require('../../config/database');
 const { Channel, Category } = require('../models');
 const { channels } = require('../../config/channels');
 
-const seedChannels = async () => {
+const seedData = async () => {
   console.log('Starting seeding process for categories and channels...');
 
   try {
@@ -55,4 +55,4 @@ const seedChannels = async () => {
   }
 };
 
-module.exports = seedChannels;
+module.exports = seedData;
