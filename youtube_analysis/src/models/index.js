@@ -2,6 +2,7 @@ const sequelize = require('../../config/database');
 const Channel = require('./Channel');
 const Video = require('./Video');
 const ChannelStats = require('./ChannelStats');
+const Category = require('./Category');
 
 Channel.hasMany(Video, {
   foreignKey: 'channelId',
@@ -23,9 +24,20 @@ ChannelStats.belongsTo(Channel, {
   as: 'channel',
 });
 
+Category.hasMany(Channel, {
+  foreignKey: 'categoryId',
+  as: 'channels',
+});
+
+Channel.belongsTo(Category, {
+  foreignKey: 'categoryId',
+  as: 'category',
+});
+
 module.exports = {
   sequelize,
   Channel,
   Video,
   ChannelStats,
+  Category,
 };

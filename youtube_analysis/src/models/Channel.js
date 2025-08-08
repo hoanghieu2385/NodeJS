@@ -18,9 +18,13 @@ Channel.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    category: {
-      type: DataTypes.STRING,
+    categoryId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: 'categories',
+        key: 'id',
+      },
     },
   },
   {
