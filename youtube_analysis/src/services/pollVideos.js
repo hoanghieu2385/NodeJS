@@ -1,7 +1,7 @@
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 const { google } = require('googleapis');
 const { Video } = require('../models');
 const { channels } = require('../../config/channels.js');
-require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 
 const youtube = google.youtube({
   version: 'v3',
@@ -32,7 +32,7 @@ const pollNewVideos = async () => {
     .map((channel) => channel.channelId);
 
   for (const channelId of allChannelIds) {
-    console.log(`Scan channel: ${channelId}`);
+    console.log(`\n\nScan channel: ${channelId}`);
 
     try {
       const response = await youtube.search.list({
@@ -87,7 +87,7 @@ if (require.main === module) {
   (async () => {
     try {
       await sequelize.sync({ alter: true });
-      await seedChannels?.();
+      await seedData?.();
 
       // Gọi ngay lần đầu
       await pollNewVideos();

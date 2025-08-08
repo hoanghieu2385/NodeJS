@@ -1,5 +1,5 @@
 const pollNewVideos = require('./src/services/pollVideos');
-const seedChannels = require('./src/services/seedChannels');
+const seedData = require('./src/services/seedData');
 const { sequelize } = require('./src/models');
 const pollChannelStatistics = require('./src/services/pollChannelStatistics');
 
@@ -10,7 +10,7 @@ async function startApp() {
     // await pollNewVideos();
     // console.log('\nScan finished.');
 
-    await pollChannelStatistics();
+    // await pollChannelStatistics();
 
     // process.exit(0);
   } catch (error) {
